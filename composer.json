@@ -1,0 +1,28 @@
+{
+	"name": "hotel-quickly/paypal-rest-api-client",
+	"type": "library",
+	"keywords": ["php", "paypal"],
+	"homepage": "http://www.HotelQuickly.com",
+	"authors": [
+		{
+			"name": "Josef Nevoral",
+			"email": "josef.nevoral@hotelquickly.com",
+			"homepage": "http://www.josef-nevoral.cz"
+		}
+	],
+	"require": {
+		"php": ">= 5.4.0",
+		"nette/nette": ">= 2.0.14",
+        "paypal/rest-api-sdk-php" : "0.7.*",
+        "paypal/adaptivepayments-sdk-php" : "~3.6.106"
+	},
+	"require-dev": {
+		"nette/tester": "@dev",
+		"janmarek/mockista": "@dev"
+	},
+	"autoload": {
+		"psr-0": {
+			"ErrorCollector": "src/"
+		}
+	}
+}
