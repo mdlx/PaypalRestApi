@@ -1,5 +1,5 @@
 {
-	"name": "hotel-quickly/paypal-rest-api-client",
+	"name": "hotel-quickly/paypal-rest-api",
 	"type": "library",
 	"keywords": ["php", "paypal"],
 	"homepage": "http://www.HotelQuickly.com",

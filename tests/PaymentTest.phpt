@@ -13,8 +13,8 @@ use Nette,
 
 require __DIR__ . '/bootstrap.php';
 require __DIR__ . '/BaseTestCase.php';
-require __DIR__ . '/../factories/PaypalFactory.php';
-require __DIR__ . '/../PaypalPayment.php';
+require __DIR__ . '/../src/Factory/PaypalFactory.php';
+require __DIR__ . '/../src/PaypalPayment.php';
 
 class PaymentTestCase extends BaseTestCase {
 
