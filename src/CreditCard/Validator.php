@@ -1,6 +1,6 @@
 <?php
 
-namespace HQ\CreditCard;
+namespace HQ\Paypal\CreditCard;
 
 use Nette;
 

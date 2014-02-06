@@ -21,8 +21,8 @@
 		"janmarek/mockista": "@dev"
 	},
 	"autoload": {
-		"psr-0": {
-			"PaypalRestApi": "src/"
+		"psr-4": {
+			"HQ\\Paypal\\": "src/"
 		}
 	}
 }

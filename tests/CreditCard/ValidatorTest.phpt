@@ -10,7 +10,7 @@ namespace Tests;
 use Nette,
 	Tester,
 	Tester\Assert,
-	\HQ\CreditCard\Validator;
+	\HQ\Paypal\CreditCard\Validator;
 
 require __DIR__ . '/../bootstrap.php';
 require __DIR__ . '/../../src/CreditCard/Validator.php';
@@ -41,7 +41,7 @@ class CreditCardValidatorTestCase extends Tester\TestCase {
 		$ccNumber = '111111111111111';
 		Assert::exception(function() use ($ccNumber, $ccValidator) {
 			$ccValidator->getCreditCardBrand($ccNumber);
-		}, '\HQ\CreditCard\UnsupportedCreditCardException');
+		}, '\HQ\Paypal\CreditCard\UnsupportedCreditCardException');
 	}
 }
 
