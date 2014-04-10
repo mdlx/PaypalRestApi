@@ -7,7 +7,7 @@ use Nette;
 use \PayPal\Types\AP\PayRequest;
 use \PayPal\Types\AP\Receiver;
 use \PayPal\Types\AP\ReceiverList;
-use \PayPal\Types\Ap\PaymentDetailsRequest;
+use \PayPal\Types\AP\PaymentDetailsRequest;
 use \PayPal\Types\Common\RequestEnvelope;
 use \PayPal\Service\AdaptivePaymentsService;
 
