@@ -5,6 +5,7 @@ namespace HQ\Paypal\Factory;
 use Nette;
 
 use \PayPal\Types\AP\PayRequest;
+use \PayPal\Types\AP\ExecutePaymentRequest;
 use \PayPal\Types\AP\Receiver;
 use \PayPal\Types\AP\ReceiverList;
 use \PayPal\Types\AP\PaymentDetailsRequest;
@@ -73,6 +74,20 @@ class PaypalFactory extends \Nette\Object {
 		$payRequest->ipnNotificationUrl = $this->ipnNotificationUrl;
 
 		return $payRequest;
+	}
+
+
+	/**
+	 * @param  int $amount
+	 * @param  string $currencyCode
+	 * @param  string $receiverPayPalAccount
+	 * @return \PayPal\Types\AP\PayRequest
+	 */
+	public function createExecutePaymentRequest($payKey)
+	{
+		$executePaymentRequest = new ExecutePaymentRequest($this->createRequestEnvelope(), $payKey);
+
+		return $executePaymentRequest;
 	}
 
 

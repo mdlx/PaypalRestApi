@@ -13,7 +13,7 @@ class PaypalPayment extends \Nette\Object {
 
 	/** @var \HQ\Paypal\Factory\PaypalFactory */
 	private $paypalFactory;
-
+	private $adaptivePaymentsService;
 	private $paypalPaymentResponse;
 
 
@@ -21,6 +21,7 @@ class PaypalPayment extends \Nette\Object {
 		\HQ\Paypal\Factory\PaypalFactory $paypalFactory
 	) {
 		$this->paypalFactory = $paypalFactory;
+		$this->adaptivePaymentsService = $paypalFactory->createAdaptivePaymentsService();
 		$this->paypalPaymentResponse = new PaypalPaymentResponseCrate();
 	}
 
@@ -29,33 +30,45 @@ class PaypalPayment extends \Nette\Object {
 	{
 		$payResponse = $this->triggerImplicitPayment($amount, $currencyCode, $receiverPayPalAccount);
 
-		if ($payResponse && $payResponse->paymentExecStatus == 'CREATED') {
-			return $this->executeImplicitPayment($payResponse->payKey);
-		} else {
+		if ($payResponse && $payResponse->paymentExecStatus != 'CREATED') {
 			throw new PaypalPaymentInvalidException('Paypal Payment was not created properly, payKey:' . $payResponse->payKey . ', paymentExecStatus:' . $payResponse->paymentExecStatus);
 		}
 
-		return null;
+		$executePaymentResponse = $this->executeImplicitPayment($payResponse->payKey);
+
+		if ($executePaymentResponse->responseEnvelope->ack == 'Failure') {
+			$jsonError = json_encode($executePaymentResponse->error);
+			throw new PaypalPaymentInvalidException('Execute Payment failed, jsonError:' . $jsonError);
+		}
+
+		$paymentDetails = $this->getPaymentDetails($payResponse->payKey);
+
+		return $paymentDetails;
 	}
 
 	private function triggerImplicitPayment($amount, $currencyCode, $receiverPayPalAccount)
 	{
 		$payRequest = $this->paypalFactory->createPayRequest($amount, $currencyCode, $receiverPayPalAccount);
-		$adaptivePaymentsService = $this->paypalFactory->createAdaptivePaymentsService();
+		$payResponse = $this->adaptivePaymentsService->Pay($payRequest);
 
-		return $adaptivePaymentsService->Pay($payRequest);
+		return $payResponse;
 	}
 
 	private function executeImplicitPayment($payKey)
 	{
+		$executePaymentRequest = $this->paypalFactory->createExecutePaymentRequest($payKey);
+		$executePaymentResponse = $this->adaptivePaymentsService->ExecutePayment($executePaymentRequest);
+
+		return $executePaymentResponse;
+	}
+
+	private function getPaymentDetails($payKey) {
 		$paymentDetailsRequest = $this->paypalFactory->createPaymentDetailsRequest($payKey);
-		$adaptivePaymentsService = $this->paypalFactory->createAdaptivePaymentsService();
+		$paymentDetailsResponse = $this->adaptivePaymentsService->PaymentDetails($paymentDetailsRequest);
 
-		$paymentDetails = $adaptivePaymentsService->PaymentDetails($paymentDetailsRequest);
-
-		$this->paypalPaymentResponse->trackingId = $paymentDetails->trackingId;
-		$this->paypalPaymentResponse->transactionId = $paymentDetails->paymentInfoList->paymentInfo[0]->transactionId;
-		$this->paypalPaymentResponse->payKey = $paymentDetails->payKey;
+		$this->paypalPaymentResponse->trackingId = $paymentDetailsResponse->trackingId;
+		$this->paypalPaymentResponse->transactionId = $paymentDetailsResponse->paymentInfoList->paymentInfo[0]->transactionId;
+		$this->paypalPaymentResponse->payKey = $paymentDetailsResponse->payKey;
 
 		return $this->paypalPaymentResponse;
 	}
@@ -70,4 +83,6 @@ class PaypalPaymentResponseCrate {
 	public $trackingId;
 	public $transactionId;
 	public $payKey;
+
+	public $error;
 }
