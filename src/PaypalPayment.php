@@ -14,11 +14,14 @@ class PaypalPayment extends \Nette\Object {
 	/** @var \HQ\Paypal\Factory\PaypalFactory */
 	private $paypalFactory;
 
+	private $paypalPaymentResponse;
+
 
 	public function __construct(
 		\HQ\Paypal\Factory\PaypalFactory $paypalFactory
 	) {
 		$this->paypalFactory = $paypalFactory;
+		$this->paypalPaymentResponse = new PaypalPaymentResponseCrate();
 	}
 
 
@@ -28,6 +31,8 @@ class PaypalPayment extends \Nette\Object {
 
 		if ($payResponse && $payResponse->paymentExecStatus == 'CREATED') {
 			return $this->executeImplicitPayment($payResponse->payKey);
+		} else {
+			throw new PaypalPaymentInvalidException('Paypal Payment was not created properly, payKey:' . $payResponse->payKey . ', paymentExecStatus:' . $payResponse->paymentExecStatus);
 		}
 
 		return null;
@@ -46,7 +51,23 @@ class PaypalPayment extends \Nette\Object {
 		$paymentDetailsRequest = $this->paypalFactory->createPaymentDetailsRequest($payKey);
 		$adaptivePaymentsService = $this->paypalFactory->createAdaptivePaymentsService();
 
-		return $adaptivePaymentsService->PaymentDetails($paymentDetailsRequest);
+		$paymentDetails = $adaptivePaymentsService->PaymentDetails($paymentDetailsRequest);
+
+		$this->paypalPaymentResponse->trackingId = $paymentDetails->trackingId;
+		$this->paypalPaymentResponse->transactionId = $paymentDetails->paymentInfoList->paymentInfo[0]->transactionId;
+		$this->paypalPaymentResponse->payKey = $paymentDetails->payKey;
+
+		return $this->paypalPaymentResponse;
 	}
 
+}
+
+class PaypalPaymentInvalidException extends \Exception {
+
+}
+
+class PaypalPaymentResponseCrate {
+	public $trackingId;
+	public $transactionId;
+	public $payKey;
 }
