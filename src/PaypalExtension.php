@@ -23,7 +23,8 @@ class PaypalExtension extends Nette\DI\CompilerExtension {
 		'mode' => 'sandbox',
 		'log' => array(
 			'LogEnabled' => true,
-			'FileName' => '%appDir%/log/paypal.log'
+			'FileName' => '%appDir%/../log/paypal.log',
+			'LogLevel' => 'FINE'
 		)
 	);
 
@@ -37,6 +38,15 @@ class PaypalExtension extends Nette\DI\CompilerExtension {
 				'mode' => $config['mode'],
 				'senderPaypalAccount' => $config['senderPaypalAccount'],
 				'adaptivePaymentsAccount' => $config['adaptivePaymentsAccount']
+			));
+
+		$builder->addDefinition($this->prefix('contextFactory'))
+			->setClass('HQ\Paypal\Factory\ContextFactory', array(
+				'clientId' => $config['clientId'],
+				'secret' => $config['secret'],
+				'httpConfig' => $config['http'],
+				'mode' => $config['mode'],
+				'logConfig' => $config['log']
 			));
 
 		// load additional config file for this extension

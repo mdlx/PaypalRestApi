@@ -14,7 +14,7 @@ $configurator->onCompile[] = function ($configurator, $compiler) {
 ```
 
 ## Possible configuration
-
+Note: create your own sandbox application at https://developer.paypal.com/
 ```yml
 paypal: # sandbox account access
 	clientId: "EBWKjlELKMYqRNQ6sYvFo64FtaRLRR5BdHEESmha49TM"

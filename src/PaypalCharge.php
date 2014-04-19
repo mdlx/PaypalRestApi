@@ -36,20 +36,6 @@ class PaypalCharge extends \Nette\Object {
 		$this->payPalParams = $payPalParams;
     }
 
-	private function _getApiContext()
-	{
-		if ($this->apiContext) {
-			return $this->apiContext;
-		}
-
-		$this->apiContext = new ApiContext(new OAuthTokenCredential(
-			$this->payPalParams['clientId'],
-			$this->payPalParams['secret']
-		));
-
-		return $this->apiContext;
-	}
-
 	/**
 	 * Create a payment using a previously obtained
 	 * credit card id. The corresponding credit
