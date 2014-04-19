@@ -1,6 +1,6 @@
 <?php
 
-namespace HQ\PayPal;
+namespace HQ\Paypal;
 
 use Nette;
 use HQ\PayPal\Factory\CreditCardFactory;
