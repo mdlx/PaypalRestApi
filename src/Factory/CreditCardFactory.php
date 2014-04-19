@@ -10,7 +10,10 @@ use Nette;
  */
 class CreditCardFactory extends \Nette\Object {
 
-	public function create()
+    /**
+     * @return \PayPal\Api\CreditCard
+     */
+    public function create()
 	{
 		return new \PayPal\Api\CreditCard();
 	}

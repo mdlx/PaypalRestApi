@@ -1,5 +1,6 @@
 services:
-	creditCardVault: \HQ\Paypal\CreditCardVault
+	creditCardVault: \HQ\Paypal\Vault
 	paypalPayment: HQ\Paypal\PaypalPayment
+	creditCardFactory: \HQ\Paypal\Factory\CreditCardFactory
 
 factories:

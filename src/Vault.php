@@ -3,20 +3,22 @@
 namespace HQ\PayPal;
 
 use Nette;
+use HQ\PayPal\Factory\CreditCardFactory;
 
 /**
  * Payment credit card vault
  *
  * @author Josef Nevoral <josef.nevoral@hotelquickly.com>
  */
-class CreditCardVault extends \Nette\Object {
+class Vault extends \Nette\Object {
 
-	/** @var HQ\PayPal\Factory\CreditCardFactory */
+	/** @var CreditCardFactory */
 	private $creditCardFactory;
 
-	public function __construct()
-	{
-		//$this->creditCardFactory = $creditCardFactory;
+	public function __construct(
+        Factory\CreditCardFactory $creditCardFactory
+    ) {
+		$this->creditCardFactory = $creditCardFactory;
 	}
 
 
@@ -25,11 +27,12 @@ class CreditCardVault extends \Nette\Object {
 	 *
 	 * @param array $params	credit card parameters
 	 */
-	public function saveCard($ccNumber, $ccExpirationMonth, $ccExpirationYear, $ccCVV)
+	public function saveCard($payerId, $firstName, $lastName, $ccNumber, $ccExpirationMonth, $ccExpirationYear, $ccCVV, $ccBrandType)
 	{
 		$card = $this->creditCardFactory->create();
 
-		$card->setType($this->getCreditCardType($ccNumber));
+		$card->setPayerId($payerId);
+		$card->setType($ccBrandType);
 		$card->setNumber($ccNumber);
 		$card->setExpireMonth($ccExpirationMonth);
 		$card->setExpireYear($ccExpirationYear);
@@ -40,18 +43,11 @@ class CreditCardVault extends \Nette\Object {
 	}
 
 	/**
-	 *
-	 * @param string $cardId credit card id obtained from
-	 * a previous create API call.
+	 * @param string $cardId credit card id obtained from a previous create API call.
+     * @return string
 	 */
 	public function getCreditCard($cardId)
 	{
 		return CreditCard::get($cardId, $this->_getApiContext());
-	}
-
-
-	public function getCreditCardType($ccNumber)
-	{
-
 	}
 }
