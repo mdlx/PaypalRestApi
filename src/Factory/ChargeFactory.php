@@ -1,7 +1,8 @@
 <?php
 
-namespace HQ\Paypal;
+namespace HQ\Paypal\Factory;
 
+use Nette;
 use PayPal\Rest\ApiContext;
 use PayPal\Auth\OAuthTokenCredential;
 use PayPal\Api\PaymentExecution;
@@ -14,39 +15,19 @@ use PayPal\Api\Payment;
 use PayPal\Api\Transaction;
 use PayPal\Api\RedirectUrls;
 
-
 /**
- *  Class for charging customers by paypal
- *  @author Michal Juhas <michal.juhas@hotelquickly.com>
- *  @author Josef Nevoral <josef.nevoral@hotelquickly.com>
  *
+ * @author Josef Nevoral <josef.nevoral@hotelquickly.com>
  */
-class PaypalCharge extends \Nette\Object {
+class ChargeFactory extends \Nette\Object {
 
-   private $apiContext;
+	private $payer;
+	private $amount;
+	private $transaction;
+	private $payment;
 
-    /** @var array Braintree library initalization params */
-    private $payPalParams;
 
-    /** @var Models\AccountTransaction */
-    private $accountTransactionModel;
-
-    public function __construct($payPalParams)
-    {
-		$this->payPalParams = $payPalParams;
-    }
-
-	/**
-	 * Create a payment using a previously obtained
-	 * credit card id. The corresponding credit
-	 * card is used as the funding instrument.
-	 *
-	 * @param string $creditCardId credit card id
-	 * @param string $total Payment amount with 2 decimal points
-	 * @param string $currency 3 letter ISO code for currency
-	 * @param string $paymentDesc
-	 */
-	public function makePaymentUsingCC($creditCardId, $total, $currency, $paymentDesc)
+    public function createPayer($creditCardId)
 	{
 		$ccToken = new CreditCardToken();
 		$ccToken->setCreditCardId($creditCardId);
@@ -58,26 +39,51 @@ class PaypalCharge extends \Nette\Object {
 		$payer->setPaymentMethod("credit_card");
 		$payer->setFundingInstruments(array($fi));
 
+		$this->payer = $payer;
+
+		return $this;
+	}
+
+
+	public function createAmount($total, $currency)
+	{
 		// Specify the payment amount.
 		$amount = new Amount();
 		$amount->setCurrency($currency);
 		$amount->setTotal($total);
+
+		$this->amount = $amount;
+
+		return $this;
+	}
+
+
+	public function createTransaction($paymentDesc)
+	{
 		// ###Transaction
 		// A transaction defines the contract of a
 		// payment - what is the payment for and who
 		// is fulfilling it. Transaction is created with
 		// a `Payee` and `Amount` types
 		$transaction = new Transaction();
-		$transaction->setAmount($amount);
+		$transaction->setAmount($this->amount);
 		$transaction->setDescription($paymentDesc);
 
-		$payment = new Payment();
-		$payment->setIntent("sale");
-		$payment->setPayer($payer);
-		$payment->setTransactions(array($transaction));
+		$this->transaction = $transaction;
 
-		$payment->create($this->_getApiContext());
-		return $payment;
+		return $this;
 	}
 
+
+	public function createPayment()
+	{
+		$payment = new Payment();
+		$payment->setIntent("sale");
+		$payment->setPayer($this->payer);
+		$payment->setTransactions(array($this->transaction));
+
+		$payment->create($this->_getApiContext());
+
+		return $this;
+	}
 }

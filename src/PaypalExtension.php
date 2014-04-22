@@ -33,8 +33,8 @@ class PaypalExtension extends Nette\DI\CompilerExtension {
 		$builder = $this->getContainerBuilder();
 		$config = $this->getConfig($this->defaults);
 
-		$builder->addDefinition($this->prefix('paypalFactory'))
-			->setClass('HQ\Paypal\Factory\PaypalFactory', array(
+		$builder->addDefinition($this->prefix('paymentFactory'))
+			->setClass('HQ\Paypal\Factory\PaymentFactory', array(
 				'mode' => $config['mode'],
 				'senderPaypalAccount' => $config['senderPaypalAccount'],
 				'adaptivePaymentsAccount' => $config['adaptivePaymentsAccount']

@@ -4,7 +4,6 @@ namespace HQ\Paypal;
 
 use HQ\Paypal\Factory\ContextFactory;
 use Nette;
-use HQ\PayPal\Factory\CreditCardFactory;
 
 /**
  * Payment credit card vault
@@ -13,17 +12,12 @@ use HQ\PayPal\Factory\CreditCardFactory;
  */
 class Vault extends \Nette\Object {
 
-	/** @var CreditCardFactory */
-	private $creditCardFactory;
-
 	/** @var  ContextFactory */
 	private $contextFactory;
 
 	public function __construct(
-        Factory\CreditCardFactory $creditCardFactory,
 		ContextFactory $contextFactory
     ) {
-		$this->creditCardFactory = $creditCardFactory;
 		$this->contextFactory = $contextFactory;
 	}
 
@@ -35,7 +29,7 @@ class Vault extends \Nette\Object {
 	 */
 	public function saveCard($payerId, $firstName, $lastName, $ccNumber, $ccExpirationMonth, $ccExpirationYear, $ccCVV, $ccBrandType)
 	{
-		$card = $this->creditCardFactory->create();
+		$card = new \PayPal\Api\CreditCard();
 
 		$card->setPayerId($payerId);
 		$card->setFirstName($firstName);

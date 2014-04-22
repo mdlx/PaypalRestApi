@@ -11,17 +11,17 @@ namespace HQ\Paypal;
  */
 class PaypalPayment extends \Nette\Object {
 
-	/** @var \HQ\Paypal\Factory\PaypalFactory */
-	private $paypalFactory;
+	/** @var \HQ\Paypal\Factory\PaymentFactory */
+	private $paymentFactory;
 	private $adaptivePaymentsService;
 	private $paypalPaymentResponse;
 
 
 	public function __construct(
-		\HQ\Paypal\Factory\PaypalFactory $paypalFactory
+		\HQ\Paypal\Factory\PaymentFactory $paymentFactory
 	) {
-		$this->paypalFactory = $paypalFactory;
-		$this->adaptivePaymentsService = $paypalFactory->createAdaptivePaymentsService();
+		$this->paymentFactory = $paymentFactory;
+		$this->adaptivePaymentsService = $paymentFactory->createAdaptivePaymentsService();
 		$this->paypalPaymentResponse = new PaypalPaymentResponseCrate();
 	}
 
@@ -30,8 +30,8 @@ class PaypalPayment extends \Nette\Object {
 	{
 		$payResponse = $this->triggerImplicitPayment($amount, $currencyCode, $receiverPayPalAccount);
 
-		if ($payResponse && $payResponse->paymentExecStatus != 'CREATED') {
-			throw new PaypalPaymentInvalidException('Paypal Payment was not created properly, payKey:' . $payResponse->payKey . ', paymentExecStatus:' . $payResponse->paymentExecStatus);
+		if ($payResponse && $payResponse->paymentExecStatus != 'COMPLETED') {
+			throw new PaypalPaymentInvalidException('Paypal Payment was not completed properly, payKey:' . $payResponse->payKey . ', paymentExecStatus:' . $payResponse->paymentExecStatus);
 		}
 
 		$executePaymentResponse = $this->executeImplicitPayment($payResponse->payKey);
@@ -48,7 +48,7 @@ class PaypalPayment extends \Nette\Object {
 
 	private function triggerImplicitPayment($amount, $currencyCode, $receiverPayPalAccount)
 	{
-		$payRequest = $this->paypalFactory->createPayRequest($amount, $currencyCode, $receiverPayPalAccount);
+		$payRequest = $this->paymentFactory->createPayRequest($amount, $currencyCode, $receiverPayPalAccount);
 		$payResponse = $this->adaptivePaymentsService->Pay($payRequest);
 
 		return $payResponse;
@@ -56,14 +56,14 @@ class PaypalPayment extends \Nette\Object {
 
 	private function executeImplicitPayment($payKey)
 	{
-		$executePaymentRequest = $this->paypalFactory->createExecutePaymentRequest($payKey);
+		$executePaymentRequest = $this->paymentFactory->createExecutePaymentRequest($payKey);
 		$executePaymentResponse = $this->adaptivePaymentsService->ExecutePayment($executePaymentRequest);
 
 		return $executePaymentResponse;
 	}
 
 	private function getPaymentDetails($payKey) {
-		$paymentDetailsRequest = $this->paypalFactory->createPaymentDetailsRequest($payKey);
+		$paymentDetailsRequest = $this->paymentFactory->createPaymentDetailsRequest($payKey);
 		$paymentDetailsResponse = $this->adaptivePaymentsService->PaymentDetails($paymentDetailsRequest);
 
 		$this->paypalPaymentResponse->trackingId = $paymentDetailsResponse->trackingId;

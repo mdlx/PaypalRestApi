@@ -16,7 +16,7 @@ use \PayPal\Service\AdaptivePaymentsService;
  *
  * @author Josef Nevoral <josef.nevoral@hotelquickly.com>
  */
-class PaypalFactory extends \Nette\Object {
+class PaymentFactory extends \Nette\Object {
 
 	private $cancelPaymentUrl = 'https://devtools-paypal.com/guide/ap_implicit_payment/php?cancel=true';
 	private $returnUrl = 'https://devtools-paypal.com/guide/ap_implicit_payment/php?success=true';

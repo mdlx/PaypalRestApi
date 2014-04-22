@@ -13,7 +13,7 @@ use Nette,
 
 require __DIR__ . '/bootstrap.php';
 require __DIR__ . '/BaseTestCase.php';
-require __DIR__ . '/../src/Factory/PaypalFactory.php';
+require __DIR__ . '/../src/Factory/PaymentFactory.php';
 require __DIR__ . '/../src/PaypalPayment.php';
 
 class PaymentTestCase extends BaseTestCase {
@@ -23,7 +23,7 @@ class PaymentTestCase extends BaseTestCase {
 		$payResponse = (object) array('paymentExecStatus' => 'CREATED', 'payKey' => 'xxx');
 		$paymentDetails = new \stdClass;
 
-		$paypalFactory = $this->mockista->create('\HQ\Paypal\Factory\PaypalFactory', array(
+		$paymentFactory = $this->mockista->create('\HQ\Paypal\Factory\PaymentFactory', array(
 			'createPayRequest' => new \stdClass(),
 			'createAdaptivePaymentsService' => $this->mockista->create('\PayPal\Service\AdaptivePaymentsService', array(
 				'Pay' => $payResponse,
@@ -32,7 +32,7 @@ class PaymentTestCase extends BaseTestCase {
 			'createPaymentDetailsRequest' => null
 		));
 
-		$paypalPayment = new \HQ\Paypal\PaypalPayment($paypalFactory);
+		$paypalPayment = new \HQ\Paypal\PaypalPayment($paymentFactory);
 
 		Assert::same($paymentDetails, $paypalPayment->sendMoneyToPaypalAccount(20.0, 'USD', 'josef.nevoral@gmail.com'));
 	}
@@ -42,14 +42,14 @@ class PaymentTestCase extends BaseTestCase {
 	{
 		$payResponse = (object) array('paymentExecStatus' => 'FAILED');
 
-		$paypalFactory = $this->mockista->create('\HQ\Paypal\Factory\PaypalFactory', array(
+		$paymentFactory = $this->mockista->create('\HQ\Paypal\Factory\PaymentFactory', array(
 			'createPayRequest' => new \stdClass(),
 			'createAdaptivePaymentsService' => $this->mockista->create('\PayPal\Service\AdaptivePaymentsService', array(
 				'Pay' => $payResponse
 			))
 		));
 
-		$paypalPayment = new \HQ\Paypal\PaypalPayment($paypalFactory);
+		$paypalPayment = new \HQ\Paypal\PaypalPayment($paymentFactory);
 
 		Assert::null($paypalPayment->sendMoneyToPaypalAccount(20.0, 'USD', 'josef.nevoral@gmail.com'));
 	}
