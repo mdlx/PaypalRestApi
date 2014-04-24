@@ -26,9 +26,9 @@ class PaypalPayment extends \Nette\Object {
 	}
 
 
-	public function sendMoneyToPaypalAccount($amount, $currencyCode, $receiverPayPalAccount)
+	public function sendMoneyToPaypalAccount($amount, $currencyCode, $receiverPayPalAccount, $memo)
 	{
-		$payResponse = $this->triggerImplicitPayment($amount, $currencyCode, $receiverPayPalAccount);
+		$payResponse = $this->triggerImplicitPayment($amount, $currencyCode, $receiverPayPalAccount, $memo);
 
 		if ($payResponse && $payResponse->paymentExecStatus != 'COMPLETED') {
 			throw new PaypalPaymentInvalidException('Paypal Payment was not completed properly, errorId:' . $payResponse->error[0]->errorId . ', errorMessage:' . $payResponse->error[0]->message);
@@ -39,9 +39,9 @@ class PaypalPayment extends \Nette\Object {
 		return $paymentDetails;
 	}
 
-	private function triggerImplicitPayment($amount, $currencyCode, $receiverPayPalAccount)
+	private function triggerImplicitPayment($amount, $currencyCode, $receiverPayPalAccount, $memo)
 	{
-		$payRequest = $this->paymentFactory->createPayRequest($amount, $currencyCode, $receiverPayPalAccount);
+		$payRequest = $this->paymentFactory->createPayRequest($amount, $currencyCode, $receiverPayPalAccount, $memo);
 		$payResponse = $this->adaptivePaymentsService->Pay($payRequest);
 
 		return $payResponse;
@@ -59,6 +59,7 @@ class PaypalPayment extends \Nette\Object {
 		$paymentDetailsRequest = $this->paymentFactory->createPaymentDetailsRequest($payKey);
 		$paymentDetailsResponse = $this->adaptivePaymentsService->PaymentDetails($paymentDetailsRequest);
 
+		$this->paypalPaymentResponse->responseJson = json_encode($paymentDetailsResponse);
 		$this->paypalPaymentResponse->trackingId = $paymentDetailsResponse->trackingId;
 		$this->paypalPaymentResponse->transactionId = $paymentDetailsResponse->paymentInfoList->paymentInfo[0]->transactionId;
 		$this->paypalPaymentResponse->payKey = $paymentDetailsResponse->payKey;
@@ -73,6 +74,8 @@ class PaypalPaymentInvalidException extends \Exception {
 }
 
 class PaypalPaymentResponseCrate {
+	public $responseJson;
+
 	public $trackingId;
 	public $transactionId;
 	public $payKey;

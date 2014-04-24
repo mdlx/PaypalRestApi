@@ -57,7 +57,7 @@ class PaymentFactory extends \Nette\Object {
 	 * @param  string $receiverPayPalAccount
 	 * @return \PayPal\Types\AP\PayRequest
 	 */
-	public function createPayRequest($amount, $currencyCode, $receiverPayPalAccount)
+	public function createPayRequest($amount, $currencyCode, $receiverPayPalAccount, $memo = '')
 	{
 		$payRequest = new PayRequest();
 
@@ -68,10 +68,13 @@ class PaymentFactory extends \Nette\Object {
 
 		$payRequest->requestEnvelope = $this->createRequestEnvelope();
 		$payRequest->actionType = "PAY";
+		$payRequest->feesPayer = "SENDER";
+		$payRequest->memo = $memo;
 		$payRequest->cancelUrl = $this->cancelPaymentUrl;
 		$payRequest->returnUrl = $this->returnUrl;
 		$payRequest->currencyCode = $currencyCode;
 		$payRequest->ipnNotificationUrl = $this->ipnNotificationUrl;
+		$payRequest->payKeyDuration = 'P15D';	// reserve payKey for 15 days
 
 		return $payRequest;
 	}
