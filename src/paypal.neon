@@ -1,5 +1,6 @@
 services:
 	paypalVault: HQ\Paypal\Vault
 	paypalPayment: HQ\Paypal\PaypalPayment
+	paypalCharge: HQ\Paypal\PaypalCharge
 
 factories:
