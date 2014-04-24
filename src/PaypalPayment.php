@@ -31,14 +31,7 @@ class PaypalPayment extends \Nette\Object {
 		$payResponse = $this->triggerImplicitPayment($amount, $currencyCode, $receiverPayPalAccount);
 
 		if ($payResponse && $payResponse->paymentExecStatus != 'COMPLETED') {
-			throw new PaypalPaymentInvalidException('Paypal Payment was not completed properly, payKey:' . $payResponse->payKey . ', paymentExecStatus:' . $payResponse->paymentExecStatus);
-		}
-
-		$executePaymentResponse = $this->executeImplicitPayment($payResponse->payKey);
-
-		if ($executePaymentResponse->responseEnvelope->ack == 'Failure') {
-			$jsonError = json_encode($executePaymentResponse->error);
-			throw new PaypalPaymentInvalidException('Execute Payment failed, jsonError:' . $jsonError);
+			throw new PaypalPaymentInvalidException('Paypal Payment was not completed properly, errorId:' . $payResponse->error[0]->errorId . ', errorMessage:' . $payResponse->error[0]->message);
 		}
 
 		$paymentDetails = $this->getPaymentDetails($payResponse->payKey);
