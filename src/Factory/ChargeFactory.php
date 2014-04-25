@@ -20,6 +20,8 @@ use PayPal\Api\Transaction;
 use PayPal\Api\RedirectUrls;
 use PayPal\Api\Capture;
 use PayPal\Api\Authorization;
+use PayPal\Api\Sale;
+use PayPal\Api\Refund;
 
 /**
  *
@@ -49,18 +51,18 @@ class ChargeFactory extends \Nette\Object {
     public function createPayer($creditCardId, $userId)
 	{
 		$ccToken = new CreditCardToken();
-		$ccToken->setCreditCardId($creditCardId);
+		$ccToken->setCreditCardId($creditCardId)
+			->setPayerId($userId);
 
 		$fi = new FundingInstrument();
 		$fi->setCreditCardToken($ccToken);
 
-		$payerInfo = new PayerInfo();
-		$payerInfo->setPayerId($userId);
+		//$payerInfo = new PayerInfo();
+		//$payerInfo->setPayerId($userId);
 
 		$payer = new Payer();
 		$payer->setPaymentMethod("credit_card")
-			->setFundingInstruments(array($fi))
-			->setPayerInfo($payerInfo);
+			->setFundingInstruments(array($fi));
 
 		return $payer;
 	}
@@ -140,12 +142,27 @@ class ChargeFactory extends \Nette\Object {
 			->setPayer($payer)
 			->setTransactions(array($transaction));
 
-		$payment->create($this->apiContext);
+		$result = $payment->create($this->apiContext);
 
-		return $payment;
+		return $result;
 	}
 
 
+	public function createRefund($saleId, Amount $amt)
+	{
+		$sale = new Sale();
+		$sale->setId($saleId);
+
+		$refund = new Refund();
+		$refund->setAmount($amt);
+
+		$result = $sale->refund($refund, $this->apiContext);
+
+		return $result;
+	}
+
+
+	/*********************** Codes below here is for Paypal Authorized Payment *************************/
 	public function createAuthorizationId($apiContext)
 	{
 		$authId = createAuthorization($apiContext);
@@ -153,14 +170,12 @@ class ChargeFactory extends \Nette\Object {
 		return $authId;
 	}
 
-
 	public function getAuthorization($authId)
 	{
 		$authorization = Authorization::get($authId, $this->apiContext);
 
 		return $authorization;
 	}
-
 
 	public function createCapture($authId, Amount $amount)
 	{
@@ -171,12 +186,10 @@ class ChargeFactory extends \Nette\Object {
 		return $capture;
 	}
 
-
 	public function captureAuthorizedTransactionRequest(Authorization $authorization, Capture $capture)
 	{
 		return $authorization->capture($capture, $this->apiContext);
 	}
-
 
 	public function voidAuthorizedTransactionRequest(Authorization $authorization)
 	{

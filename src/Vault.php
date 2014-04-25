@@ -31,7 +31,7 @@ class Vault extends \Nette\Object {
 	{
 		$card = new \PayPal\Api\CreditCard();
 
-		$card->setPayerId(367);
+		$card->setPayerId($payerId);
 		$card->setFirstName($firstName);
 		$card->setLastName($lastName);
 		$card->setType($ccBrandType);

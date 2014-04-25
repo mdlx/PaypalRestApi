@@ -34,9 +34,9 @@ class PaypalCharge extends \Nette\Object {
 	 * @param string $currency 3 letter ISO code for currency
 	 * @param string $paymentDesc
 	 */
-	public function makePaymentUsingCC($creditCardId, $total, $currency, $paymentDesc)
+	public function makePaymentUsingCC($creditCardId, $userId, $total, $currency, $paymentDesc)
 	{
-		$payer = $this->chargeFactory->createPayer($creditCardId, 367);
+		$payer = $this->chargeFactory->createPayer($creditCardId, $userId);
 
 		//$item = $this->chargeFactory->createItem($paymentDesc, $currency, 1, $total);
 		//$itemList = $this->chargeFactory->createItemList(array($item));
@@ -46,13 +46,22 @@ class PaypalCharge extends \Nette\Object {
 		$transaction = $this->chargeFactory->createTransaction($amount, $paymentDesc);
 
 		try {
-			$payment = $this->chargeFactory->createPayment($payer, $transaction);
+			$paymentResult = $this->chargeFactory->createPayment($payer, $transaction);
 		} catch (PayPal\Exception\PPConnectionException $e) {
 			var_dump($e->getMessage(). ", Error connecting to " . $ex->getUrl());
 			$stop();
 		}
 
-		return $payment;
+		return $paymentResult;
+	}
+
+	public function makeRefundOfCC($transactionId, $total, $currency)
+	{
+		$amount = $this->chargeFactory->createAmount($total, $currency);
+
+		$refundResult = $this->chargeFactory->createRefund($transactionId, $amount);
+
+		return $refundResult;
 	}
 
 	public function captureAuthorizedPayment($authId, $total, $currency)
