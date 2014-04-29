@@ -1,6 +1,7 @@
 services:
 	paypalVault: HQ\Paypal\Vault
 	paypalPayment: HQ\Paypal\PaypalPayment
-	#paypalCharge: HQ\Paypal\PaypalCharge
+	paypalCharge: HQ\Paypal\PaypalCharge(...)
+	chargeFactory: HQ\Paypal\Factory\ChargeFactory(...)
 
 factories:
