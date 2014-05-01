@@ -71,7 +71,7 @@ class PaypalCharge extends \Nette\Object {
 		$capture = $this->chargeFactory->createCapture($authId, $amount);
 		$captureResult = $this->chargeFactory->captureAuthorizedTransactionRequest($authorization, $capture);
 
-		return $payment;
+		return $captureResult;
 	}
 
 	public function voidAuthorizedPayment($authId)
@@ -79,7 +79,7 @@ class PaypalCharge extends \Nette\Object {
 		$authorization = $this->chargeFactory->getAuthorization($authId);
 		$voidResult = $this->chargeFactory->voidAuthorizedTransactionRequest($authorization);
 
-		return $payment;
+		return $voidResult;
 	}
 
 }
