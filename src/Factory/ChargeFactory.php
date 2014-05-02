@@ -26,6 +26,7 @@ use PayPal\Api\Refund;
 /**
  *
  * @author Josef Nevoral <josef.nevoral@hotelquickly.com>
+ * @author Jakapun Kehachindawat <jakapun.kehachindawat@hotelquickly.com>
  */
 class ChargeFactory extends \Nette\Object {
 
@@ -134,11 +135,14 @@ class ChargeFactory extends \Nette\Object {
 		return $transaction;
 	}
 
-
-	public function createPayment(Payer $payer, Transaction $transaction)
+	/**
+	 * @param $intent = authorize or sale
+	 *
+	 */
+	public function createPayment($intent, Payer $payer, Transaction $transaction)
 	{
 		$payment = new Payment();
-		$payment->setIntent("sale")
+		$payment->setIntent($intent)
 			->setPayer($payer)
 			->setTransactions(array($transaction));
 

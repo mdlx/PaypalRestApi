@@ -45,12 +45,7 @@ class PaypalCharge extends \Nette\Object {
 
 		$transaction = $this->chargeFactory->createTransaction($amount, $paymentDesc);
 
-		try {
-			$paymentResult = $this->chargeFactory->createPayment($payer, $transaction);
-		} catch (PayPal\Exception\PPConnectionException $e) {
-			var_dump($e->getMessage(). ", Error connecting to " . $ex->getUrl());
-			$stop();
-		}
+		$paymentResult = $this->chargeFactory->createPayment('authorize', $payer, $transaction);
 
 		return $paymentResult;
 	}
