@@ -50,11 +50,11 @@ class PaypalCharge extends \Nette\Object {
 		return $paymentResult;
 	}
 
-	public function makeRefundOfCC($transactionId, $total, $currency)
+	public function makeRefundOfCC($captureId, $total, $currency)
 	{
 		$amount = $this->chargeFactory->createAmount($total, $currency);
 
-		$refundResult = $this->chargeFactory->createRefund($transactionId, $amount);
+		$refundResult = $this->chargeFactory->createRefund($captureId, $amount);
 
 		return $refundResult;
 	}

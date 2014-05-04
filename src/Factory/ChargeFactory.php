@@ -44,8 +44,6 @@ class ChargeFactory extends \Nette\Object {
 		ContextFactory $contextFactory
 	) {
 		$this->contextFactory = $contextFactory;
-
-		$this->apiContext = $this->contextFactory->createContext();
 	}
 
 
@@ -141,26 +139,29 @@ class ChargeFactory extends \Nette\Object {
 	 */
 	public function createPayment($intent, Payer $payer, Transaction $transaction)
 	{
+		$apiContext = $this->contextFactory->createContext();
+
 		$payment = new Payment();
 		$payment->setIntent($intent)
 			->setPayer($payer)
 			->setTransactions(array($transaction));
 
-		$result = $payment->create($this->apiContext);
+		$result = $payment->create($apiContext);
 
 		return $result;
 	}
 
 
-	public function createRefund($saleId, Amount $amt)
+	public function createRefund($captureId, Amount $amt)
 	{
-		$sale = new Sale();
-		$sale->setId($saleId);
+		$apiContext = $this->contextFactory->createContext();
+
+		$capture = Capture::get($captureId, $apiContext);
 
 		$refund = new Refund();
 		$refund->setAmount($amt);
 
-		$result = $sale->refund($refund, $this->apiContext);
+		$result = $capture->refund($refund, $apiContext);
 
 		return $result;
 	}
@@ -176,7 +177,9 @@ class ChargeFactory extends \Nette\Object {
 
 	public function getAuthorization($authId)
 	{
-		$authorization = Authorization::get($authId, $this->apiContext);
+		$apiContext = $this->contextFactory->createContext();
+
+		$authorization = Authorization::get($authId, $apiContext);
 
 		return $authorization;
 	}
@@ -192,11 +195,13 @@ class ChargeFactory extends \Nette\Object {
 
 	public function captureAuthorizedTransactionRequest(Authorization $authorization, Capture $capture)
 	{
-		return $authorization->capture($capture, $this->apiContext);
+		$apiContext = $this->contextFactory->createContext();
+		return $authorization->capture($capture, $apiContext);
 	}
 
 	public function voidAuthorizedTransactionRequest(Authorization $authorization)
 	{
-		return $authorization->void($this->apiContext);
+		$apiContext = $this->contextFactory->createContext();
+		return $authorization->void($apiContext);
 	}
 }
