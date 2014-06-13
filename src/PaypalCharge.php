@@ -77,6 +77,13 @@ class PaypalCharge extends \Nette\Object {
 		return $voidResult;
 	}
 
+	public function getCapturedTransactionDetail($transactionId)
+	{
+		$result = $this->chargeFactory->getCapture($transactionId);
+
+		return $result;
+	}
+
 	public function getTransactionStatus($transactionId)
 	{
 		$result = $this->chargeFactory->getAuthorization($transactionId);

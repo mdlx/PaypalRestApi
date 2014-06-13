@@ -193,6 +193,14 @@ class ChargeFactory extends \Nette\Object {
 		return $capture;
 	}
 
+	public function getCapture($captureId)
+	{
+		$apiContext = $this->contextFactory->createContext();
+
+		$capture = Capture::get($captureId, $apiContext);
+		return $capture;
+	}
+
 	public function captureAuthorizedTransactionRequest(Authorization $authorization, Capture $capture)
 	{
 		$apiContext = $this->contextFactory->createContext();
