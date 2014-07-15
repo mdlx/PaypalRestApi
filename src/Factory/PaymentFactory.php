@@ -68,7 +68,7 @@ class PaymentFactory extends \Nette\Object {
 
 		$payRequest->requestEnvelope = $this->createRequestEnvelope();
 		$payRequest->actionType = "PAY";
-		$payRequest->feesPayer = "SENDER";
+		$payRequest->feesPayer = "EACHRECEIVER";
 		$payRequest->memo = $memo;
 		$payRequest->cancelUrl = $this->cancelPaymentUrl;
 		$payRequest->returnUrl = $this->returnUrl;
