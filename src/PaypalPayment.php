@@ -30,7 +30,7 @@ class PaypalPayment extends \Nette\Object {
 	{
 		$payResponse = $this->triggerImplicitPayment($amount, $currencyCode, $receiverPayPalAccount, $memo);
 
-		if ($payResponse && $payResponse->responseEnvelope->ack != 'Success') {
+		if ($payResponse && $payResponse->responseEnvelope->ack != 'Success' && $payResponse->status != 'COMPLETED') {
 			throw new PaypalPaymentInvalidException('Paypal Payment was not completed properly, responseJson: ' . json_encode($payResponse));
 		}
 
